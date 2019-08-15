@@ -1,16 +1,26 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <form [formGroup]="form">
+  <h5>Date not high than today</h5>
   <label for="dateDefault">Date default (dd/mm/yy)</label>
   <input type="text" id="dateDefault" name="dateDefault" formControlName="dateDefault">
   <input type="submit">
   <p *ngIf="form.controls.dateDefault.hasError('dateHighThanToday')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Date can't be high than today</p>
-  <p *ngIf="form.controls.dateDefault.hasError('invalidDateFormat')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Invalid date format</p>
+  <p *ngIf="form.controls.dateDefault.hasError('invalidDateFormat')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Fill te input in the correct date format</p>
   <hr>
 
+  <h5>Date not high than today</h5>
   <label for="dateWithCustomSeparator">Date with custom (,-.) separator (mm,-.yyyy,-.dd)</label>
   <input type="text" id="dateWithCustomSeparator" name="dateWithCustomSeparator" formControlName="dateWithCustomSeparator">
-  <input type="submit">
   <p *ngIf="form.controls.dateWithCustomSeparator.hasError('dateHighThanToday')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Date can't be high than today</p>
-  <p *ngIf="form.controls.dateWithCustomSeparator.hasError('invalidDateFormat')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Invalid date format</p>
+  <p *ngIf="form.controls.dateWithCustomSeparator.hasError('invalidDateFormat')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Fill te input in the correct date format</p>
+  <hr>
+
+  <h5>Comparing two dates in format (mm-dd-yyyy)</h5>
+  <label for="dateFrom">Date from</label>
+  <input type="text" id="dateFrom" name="dateFrom" formControlName="dateFrom">
+  <label for="dateTo">Date to</label>
+  <input type="text" id="dateTo" name="dateFrom" formControlName="dateTo">
+  <p *ngIf="form.hasError('dateFrom-dateNotGraterThan')" style="color: #F00;font-weight: bold; font-size: 0.85rem">'Date from' can't be major than 'date to'</p>
+  <p *ngIf="form.hasError('invalidDateFormat')" style="color: #F00;font-weight: bold; font-size: 0.85rem">Fill both inputs in the correct format</p>
   <hr>
 </form>

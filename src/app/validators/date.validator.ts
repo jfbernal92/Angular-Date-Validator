@@ -1,11 +1,5 @@
-import {FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
-
-const DatePatterns = {
-  DD: 'dd',
-  MM: 'mm',
-  YY: 'yy',
-  YYYY: 'yyyy'
-};
+import {AbstractControl, FormControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {DateUtil} from '../utils/date.util';
 
 export class DateValidator {
 
@@ -21,39 +15,33 @@ export class DateValidator {
     const invalidDateFormat: ValidationErrors =  {['invalidDateFormat']: true};
 
     return (control: FormControl): ValidationErrors | null => {
-      const patterns = format.split(separator);
-      if (patterns.length !== 3 && (format.length !== (8 + separator.length * 3) || format.length !== (6 + separator.length * 3))) {
-        throw new Error('The format used to validate the date is invalid. Be sure that year is "yy" or "yyyy", month is "mm" and ' +
-          'day is "dd". The format is case insensitive.');
-      }
-      const values = control.value.split(separator);
-
-      if (values.length !== 3) {
+      const dateValue = DateUtil.buildDateFromString(control.value, format, separator);
+      if (dateValue === null) {
         return invalidDateFormat;
       }
+      return dateValue.getTime() > new Date().getTime() ? validationError :  null;
+    };
+  }
 
-      const inputDate = new Date();
-      const dayValue = values[patterns.indexOf(DatePatterns.DD)];
-      const monthValue = values[patterns.indexOf(DatePatterns.MM)];
-
-      let yearValue;
-      let yearPrefix: string;
-      if (patterns.includes(DatePatterns.YY)) {
-        yearPrefix = new Date().getFullYear()
-          .toString().substr( 0, new Date().getFullYear().toString().length - DatePatterns.YY.length);
-        yearValue = yearPrefix + values[patterns.indexOf(DatePatterns.YY)];
-      } else {
-        yearValue = values[patterns.indexOf(DatePatterns.YYYY)];
-      }
-
-      if (monthValue.length !== DatePatterns.MM.length || dayValue.length !== DatePatterns.DD.length
-        || yearValue.length !== DatePatterns.YYYY.length) {
+  /**
+   * Compares two dates to validate that the first one is minor than the second one.
+   * The error name will be 'minorDateControlName-dateNotGraterThan'.
+   *
+   * @param minorDateControlName - Name of the minor date form control
+   * @param majorDateControlName - Name of the major date form control
+   * @param format - Format of the date. Default: dd/mm/yy
+   * @param separator - Default: /
+   */
+  static dateNotGraterThan(minorDateControlName: string, majorDateControlName: string, format = 'dd/mm/yy', separator = '/'): ValidatorFn {
+    const validatorError: ValidationErrors = {[`${minorDateControlName}-dateNotGraterThan`]: true};
+    const invalidDateFormat: ValidationErrors =  {['invalidDateFormat']: true};
+    return (control: AbstractControl): ValidationErrors | null => {
+      const minorDateValue: Date = DateUtil.buildDateFromString(control.get(minorDateControlName).value, format, separator);
+      const majorDateValue: Date = DateUtil.buildDateFromString(control.get(majorDateControlName).value, format, separator);
+      if (minorDateValue === null || majorDateValue === null) {
         return invalidDateFormat;
       }
-
-      inputDate.setFullYear(yearValue, monthValue - 1, dayValue);
-
-      return inputDate.getTime() > new Date().getTime() ? validationError :  null;
+      return  minorDateValue.getTime() > majorDateValue.getTime() ? validatorError : null;
     };
   }
 }

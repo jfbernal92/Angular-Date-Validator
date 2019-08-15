@@ -14,6 +14,8 @@ export class AppComponent implements OnInit {
     this.form = new FormGroup({
       dateDefault: new FormControl('', DateValidator.notHighThanToday()),
       dateWithCustomSeparator: new FormControl('', DateValidator.notHighThanToday('mm,-.yyyy,-.dd', ',-.')),
-    });
+      dateFrom: new FormControl(''),
+      dateTo: new FormControl('')
+    }, DateValidator.dateNotGraterThan('dateFrom', 'dateTo', 'mm-dd-yyyy', '-'));
   }
 }
